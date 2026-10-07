@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Calculadora de Matrices · Equipo 21</title>
+<style>
+:root{--bg:#f3eee4;--card:#fffdf8;--ink:#1f2a37;--mu:#6b7280;--ac:#0f766e;--ac-s:#d9efec;--bd:#e2dac8;--bad:#b42318;--bad-s:#fdecea;--ok-s:#eef7f1;--grid:rgba(31,42,55,.045)}
+@media (prefers-color-scheme:dark){:root{--bg:#12161b;--card:#1a2027;--ink:#e9e6df;--mu:#9aa4b0;--ac:#2dd4bf;--ac-s:#17332f;--bd:#2b343e;--bad:#fda29b;--bad-s:#3a1c1a;--ok-s:#17261f;--grid:rgba(233,230,223,.04)}}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px}
+.wrap{max-width:880px;margin:0 auto;padding:2rem 1rem 3rem}
+.top{text-align:center;margin-bottom:1.6rem}
+.top h1{margin:0;font:700 2.4rem/1.1 "Iowan Old Style","Palatino Linotype",Georgia,serif;letter-spacing:-.02em}
+.top h1 i{color:var(--ac);font-weight:400}
+.top p{margin:.4rem 0 .8rem;color:var(--mu)}
+.names{display:inline-block;font-size:.85rem;color:var(--mu);border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);padding:6px 18px}
+.names b{color:var(--ink);font-weight:600}.names span{color:var(--ac);font-weight:700;text-transform:uppercase;letter-spacing:.12em;margin-left:8px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:22px;margin-bottom:14px;box-shadow:0 1px 0 var(--bd),0 8px 24px -16px rgba(0,0,0,.25)}
+.step{display:flex;align-items:center;gap:10px;font-weight:700;margin-bottom:14px}
+.step em{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--ac);color:var(--card);font:700 .85rem system-ui;font-style:normal}
+.step small{margin-left:auto;font-weight:400;color:var(--mu)}
+label{display:block;font-size:.78rem;font-weight:700;margin-bottom:5px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em}
+select,input,button{font:inherit;color:inherit}
+select,input{width:100%;padding:9px 11px;border:1px solid var(--bd);border-radius:8px;background:var(--card);outline:none;transition:border-color .15s,box-shadow .15s}
+select:focus,input:focus{border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-s)}
+button{border:1px solid transparent;border-radius:8px;padding:9px 16px;font-weight:600;cursor:pointer;transition:background .15s,transform .05s}
+button:active{transform:translateY(1px)}button:focus-visible{outline:3px solid var(--ac-s);outline-offset:2px}
+.pri{background:var(--ac);color:var(--card)}.pri:hover{filter:brightness(1.1)}
+.sec{background:var(--ac-s);color:var(--ac)}.sec:hover{filter:brightness(.96)}
+.gho{background:transparent;border-color:var(--bd)}.gho:hover{background:var(--ac-s)}
+.row{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end}
+.row>div{min-width:120px}
+.chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:8px;margin:14px 0 4px}
+.chip{display:flex;flex-direction:column;align-items:center;gap:0;padding:9px 6px;background:transparent;border-color:var(--bd)}
+.chip b{font:600 1.15rem Georgia,serif;color:var(--ac)}.chip span{font-size:.8rem;color:var(--mu)}
+.chip:hover{border-color:var(--ac)}.chip.on{background:var(--ac);border-color:var(--ac)}.chip.on b,.chip.on span{color:var(--card)}
+.help{color:var(--mu);font-size:.9rem;margin-top:10px}
+.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.tab{background:transparent;border-color:var(--bd);min-width:44px}.tab.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.panel{display:none}.panel.on{display:block}
+.head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.badge{font-size:.78rem;background:var(--ac-s);color:var(--ac);padding:2px 9px;border-radius:99px;margin-left:8px;font-weight:600}
+.actions{display:flex;gap:6px;flex-wrap:wrap}.actions button{padding:6px 12px;font-size:.88rem}
+.dims{display:flex;gap:12px;margin-bottom:16px}.dims>div{width:110px}
+.scroll{overflow-x:auto;padding:4px 0 10px}
+.mx{position:relative;display:block;width:max-content;margin:0 auto;padding:8px 18px}
+.mx::before,.mx::after{content:"";position:absolute;top:0;bottom:0;width:10px;border:2px solid var(--ink)}
+.mx::before{left:0;border-right:0}.mx::after{right:0;border-left:0}
+.grid{display:grid;gap:6px}
+.grid input{width:64px;height:42px;padding:2px;text-align:center;font-weight:600}
+.grid input.inv{border-color:var(--bad);background:var(--bad-s)}
+.tip{color:var(--mu);font-size:.82rem;text-align:center;margin-top:6px}
+.checks{display:flex;gap:8px;flex-wrap:wrap}
+.check{display:flex;align-items:center;gap:7px;margin:0;padding:7px 14px;border:1px solid var(--bd);border-radius:8px;cursor:pointer;font-size:.95rem;font-weight:600;color:var(--ink);text-transform:none;letter-spacing:0}
+.check input{width:auto;padding:0;accent-color:var(--ac)}
+.box{padding:18px;border:1px solid var(--bd);border-radius:12px;overflow-x:auto;min-height:120px}
+.ok{background:var(--ok-s);border-color:var(--ac)}.bad{background:var(--bad-s);border-color:var(--bad);color:var(--bad)}
+.lbl{text-align:center;font:italic 1.15rem Georgia,serif;margin-bottom:6px}
+.scalar{font:700 2.6rem Georgia,serif;color:var(--ac);text-align:center}
+table{border-collapse:separate;border-spacing:10px 6px}
+td{min-width:54px;text-align:center;font:600 1.1rem Georgia,serif;padding:2px 4px}
+.foot{text-align:center;color:var(--mu);font-size:.82rem;margin-top:1.5rem}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:480px){.top h1{font-size:1.9rem}.grid input{width:56px}}
+</style>
+</head>
+<body><div class="wrap">
+
+<header class="top">
+    <h1>Calculadora de <i>Matrices</i></h1>
+    <p>Álgebra Lineal</p>
+    <div class="names"><b>Josafat Maruri Pensado · Christian de Jesus Escobar Hernandez</b><span>Equipo 21</span></div>
+</header>
+
+<section class="card">
+    <div class="step"><em>1</em>Elige la operación</div>
+    <div class="row">
+        <div><label for="count">Matrices disponibles</label><select id="count"></select></div>
+        <div id="kDiv" hidden><label for="k">Valor de k</label><input id="k" value="2" inputmode="decimal" placeholder="ej. 1/2" autocomplete="off"></div>
+    </div>
+    <div class="chips" id="chips" role="radiogroup" aria-label="Operación"></div>
+    <div class="help" id="help"></div>
+</section>
+
+<section class="card">
+    <div class="step"><em>2</em>Escribe tus matrices</div>
+    <div class="tabs" id="tabs" role="tablist"></div><div id="panels"></div>
+</section>
+
+<section class="card">
+    <div class="step"><em>3</em>Calcula</div>
+    <div class="head"><div class="checks" id="checks"></div><button class="gho" id="all" type="button">Marcar todas</button></div>
+    <div class="help" id="note" style="margin:0 0 14px"></div>
+    <div class="row"><button class="pri" id="go" type="button">Calcular</button><span class="help" style="margin:0">o presiona Ctrl + Enter</span></div>
+</section>
+
+<section class="card">
+    <div class="head"><b>Resultado</b>
+        <div class="actions"><button class="gho" id="mode" type="button">Ver: fracciones</button><button class="sec" id="copy" type="button" hidden>Copiar</button></div></div>
+    <div class="box" id="result" aria-live="polite">Escribe los valores y pulsa “Calcular”.</div>
+</section>
+
+<div class="foot">Equipo 21 · HTML + CSS + JS, sin dependencias</div>
+</div>
+
+<script>
+const L="ABCDE".split(""), EPS=1e-10, S={};
+const OPS=[["sum","Suma","+"],["sub","Resta","−"],["mul","Multiplicar","×"],["det","Determinante","|A|"],["inv","Inversa","A⁻¹"],["cof","Cofactores","Cof"],["min","Menores","Mᵢⱼ"],["trans","Transpuesta","Aᵀ"],["scale","Escalar","k·A"]];
+const HELP={sum:"Suma las matrices elegidas. Deben tener las mismas dimensiones.",sub:"Resta en orden alfabético (A − B − …). Mismas dimensiones.",mul:"Multiplica en orden alfabético. Las columnas de cada una deben coincidir con las filas de la siguiente.",det:"Elige una matriz cuadrada.",inv:"Elige una matriz cuadrada con determinante distinto de cero.",cof:"Elige una matriz cuadrada.",min:"Matriz de menores: el determinante que queda al quitar cada fila y columna. Elige una matriz cuadrada.",trans:"Intercambia filas por columnas.",scale:"Multiplica cada elemento por k (admite fracciones)."};
+const UNARY=["det","inv","cof","min","trans","scale"];
+L.forEach(x=>S[x]={r:3,c:3,v:Array.from({length:3},()=>Array(3).fill("0"))});
+let active="A", op="sum", raw="", dec=false;
+const drawn=new Set(); // renderiza cada matriz solo cuando se abre (rápido con 100×100)
+
+const $=id=>document.getElementById(id), isU=o=>UNARY.includes(o);
+
+// Lee enteros, decimales, fracciones (3/4), mixtos (1 1/2) y notación científica. Vacío = 0. Inválido = NaN.
+function parseN(s){
+ s=String(s).trim().replace(/,/g,".").replace(/\s+/g," ");
+ if(s==="")return 0;
+ let m=s.match(/^([+-]?)(\d+) (\d+)\/(\d+)$/);
+ if(m){const d=+m[4];return d?(m[1]=="-"?-1:1)*(+m[2]+m[3]/d):NaN}
+ m=s.match(/^([+-]?(?:\d+\.?\d*|\.\d+))\/([+-]?(?:\d+\.?\d*|\.\d+))$/);
+ if(m){const d=+m[2];return d?+m[1]/d:NaN}
+ return /^[+-]?(\d+\.?\d*|\.\d+)(e[+-]?\d+)?$/i.test(s)?+s:NaN;
+}
+function toFrac(x){
+ if(!Number.isFinite(x))return String(x);
+ if(Math.abs(x)<EPS)return "0";
+ const s=x<0?"-":"", v=Math.abs(x);
+ if(dec)return s+String(Math.round(v*1e4)/1e4);
+ if(Math.abs(Math.round(v)-v)<EPS)return s+Math.round(v);
+ let h1=1,h2=0,k1=0,k2=1,b=v;
+ for(let i=0;i<20;i++){
+  const a=Math.floor(b);
+  [h1,h2]=[a*h1+h2,h1];[k1,k2]=[a*k1+k2,k1];
+  if(Math.abs(v-h1/k1)<1e-9||b===a)break;
+  b=1/(b-a);
+ }
+ if(k1>1000||Math.abs(v-h1/k1)>1e-6)return s+String(Math.round(v*1e4)/1e4);
+ return k1===1?s+h1:s+h1+"/"+k1;
+}
+const fmt=toFrac;
+const opt=v=>Array.from({length:100},(_,i)=>`<option value="${i+1}"${i+1==v?" selected":""}>${i+1}</option>`).join("");
+for(let i=2;i<=5;i++)$("count").insertAdjacentHTML("beforeend",`<option value="${i}"${i==2?" selected":""}>${i}</option>`);
+$("chips").innerHTML=OPS.map(([o,n,s])=>`<button type="button" class="chip" role="radio" data-o="${o}"><b>${s}</b><span>${n}</span></button>`).join("");
+
+function draw(){
+ const ls=L.slice(0,+$("count").value);
+ if(!ls.includes(active))active="A";
+ $("tabs").innerHTML=ls.map(x=>`<button type="button" role="tab" class="tab" data-m="${x}" onclick="setActive('${x}')">${x}</button>`).join("");
+ $("panels").innerHTML=ls.map(panel).join("");
+ drawn.clear();
+ $("checks").innerHTML=ls.map(x=>`<label class="check"><input type="checkbox" value="${x}"> Matriz ${x}</label>`).join("");
+ $("checks").querySelectorAll("input").forEach(q=>q.onchange=()=>{if(isU(op)&&q.checked)$("checks").querySelectorAll("input").forEach(o=>{if(o!==q)o.checked=false});note()});
+ setActive(active);ui();
+}
+function setActive(x){
+ active=x;
+ document.querySelectorAll(".tab").forEach(t=>{const on=t.dataset.m==x;t.classList.toggle("on",on);t.setAttribute("aria-selected",on)});
+ document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.dataset.m==x));
+ if(!drawn.has(x)){drawn.add(x);render(x)}
+ if(isU(op))choose();
+}
+function panel(x){
+ return `<div class="panel" data-m="${x}"><div class="head"><div><b>Matriz ${x}</b><span class="badge" id="z${x}"></span></div>
+ <div class="actions"><button type="button" class="sec" onclick="identity('${x}')">Identidad</button><button type="button" class="gho" onclick="example('${x}')">Ejemplo</button><button type="button" class="gho" onclick="zero('${x}')">Limpiar</button></div></div>
+ <div class="dims"><div><label for="r${x}">Filas</label><select id="r${x}" onchange="resizeM('${x}',+this.value,S.${x}.c)">${opt(S[x].r)}</select></div>
+ <div><label for="c${x}">Columnas</label><select id="c${x}" onchange="resizeM('${x}',S.${x}.r,+this.value)">${opt(S[x].c)}</select></div></div>
+ <div class="scroll"><div class="mx"><div class="grid" id="g${x}"></div></div></div></div>`;
+}
+function render(x){
+ const m=S[x], g=$("g"+x);
+ $("z"+x).textContent=`${m.r} × ${m.c}`;
+ $("r"+x).value=m.r;$("c"+x).value=m.c;
+ g.style.gridTemplateColumns=`repeat(${m.c},64px)`;g.innerHTML="";
+ for(let i=0;i<m.r;i++)for(let j=0;j<m.c;j++){
+  const q=document.createElement("input");
+  q.type="text";q.inputMode="text";q.autocomplete="off";q.value=m.v[i][j];
+  q.setAttribute("aria-label",`Matriz ${x}, fila ${i+1}, columna ${j+1}`);
+  q.classList.toggle("inv",isNaN(parseN(q.value)));
+  q.onfocus=()=>q.select();
+  q.oninput=()=>{m.v[i][j]=q.value;q.classList.toggle("inv",isNaN(parseN(q.value)))};
+  q.onkeydown=e=>{
+   const at=(di,dj)=>{const t=g.children[(i+di)*m.c+j+dj];if(t&&(i+di>=0)&&(j+dj>=0)&&(j+dj<m.c)){e.preventDefault();t.focus()}};
+   if(e.key=="Enter"||e.key=="ArrowDown"){if(e.ctrlKey&&e.key=="Enter")return;at(1,0)}
+   else if(e.key=="ArrowUp")at(-1,0);
+   else if(e.key=="ArrowRight"&&q.selectionStart==q.value.length)at(0,1);
+   else if(e.key=="ArrowLeft"&&q.selectionEnd==0)at(0,-1);
+  };
+  q.onpaste=e=>{
+   const t=(e.clipboardData||window.clipboardData).getData("text");
+   if(!/[\t\n]/.test(t.trim()))return;
+   e.preventDefault();
+   const rows=t.trim().split(/\r?\n/).map(r=>r.split("\t"));
+   const R=Math.min(100,Math.max(m.r,i+rows.length)), C=Math.min(100,Math.max(m.c,j+Math.max(...rows.map(r=>r.length))));
+   resizeM(x,R,C,true);
+   rows.forEach((r,a)=>r.forEach((v,b)=>{if(i+a<R&&j+b<C)m.v[i+a][j+b]=v.trim()}));
+   render(x);
+  };
+  g.appendChild(q);
+ }
+}
+function resizeM(x,r,c,silent){
+ const old=S[x].v;S[x].r=r;S[x].c=c;
+ S[x].v=Array.from({length:r},(_,i)=>Array.from({length:c},(_,j)=>old?.[i]?.[j]??"0"));
+ if(!silent)render(x);
+}
+function fill(x,f){const m=S[x];m.v=Array.from({length:m.r},(_,i)=>Array.from({length:m.c},(_,j)=>String(f(i,j))));render(x)}
+const zero=x=>fill(x,()=>0), identity=x=>fill(x,(i,j)=>i==j?1:0), example=x=>fill(x,(i,j)=>i==j?i+1:((i+j+1)%5)-2);
+
+const selected=()=>[...$("checks").querySelectorAll("input:checked")].map(x=>x.value);
+function choose(){$("checks").querySelectorAll("input").forEach(q=>q.checked=isU(op)?q.value==active:true);note()}
+function note(){const a=selected();$("note").innerHTML=a.length?"Se usará: <b>"+a.join(isU(op)?"":" , ")+"</b>":"Ninguna matriz seleccionada."}
+function ui(){
+ $("kDiv").hidden=op!=="scale";
+ $("help").textContent=HELP[op];
+ $("chips").querySelectorAll(".chip").forEach(c=>{const on=c.dataset.o==op;c.classList.toggle("on",on);c.setAttribute("aria-checked",on)});
+ $("all").hidden=isU(op);
+ choose();
+}
+
+const mat=x=>S[x].v.map((r,i)=>r.map((t,j)=>{
+ const n=parseN(t);
+ if(isNaN(n))throw Error(`Matriz ${x}, fila ${i+1}, columna ${j+1}: “${t}” no es un número válido. Usa enteros, decimales o fracciones como 3/4.`);
+ return n;
+}));
+const same=(a,b)=>a.length==b.length&&a[0].length==b[0].length;
+const add=(a,b)=>a.map((r,i)=>r.map((v,j)=>v+b[i][j])), sub=(a,b)=>a.map((r,i)=>r.map((v,j)=>v-b[i][j]));
+const square=m=>{if(m.length!=m[0].length)throw Error("La matriz debe ser cuadrada.")};
+const tol=m=>EPS*Math.max(1,...m.flat().map(Math.abs));
+function mul(a,b){
+ if(a[0].length!=b.length)throw Error(`Imposible multiplicar ${a.length}×${a[0].length} por ${b.length}×${b[0].length}.`);
+ const z=Array.from({length:a.length},()=>Array(b[0].length).fill(0));
+ for(let i=0;i<a.length;i++)for(let j=0;j<b[0].length;j++)for(let k=0;k<a[0].length;k++)z[i][j]+=a[i][k]*b[k][j];
+ return z;
+}
+function det(m){
+ square(m);
+ const n=m.length,a=m.map(r=>r.slice()),t=tol(m);let d=1;
+ for(let c=0;c<n;c++){
+  let p=c;for(let r=c+1;r<n;r++)if(Math.abs(a[r][c])>Math.abs(a[p][c]))p=r;
+  if(Math.abs(a[p][c])<t)return 0;
+  if(p!=c){[a[c],a[p]]=[a[p],a[c]];d=-d}
+  const q=a[c][c];d*=q;
+  for(let r=c+1;r<n;r++){const f=a[r][c]/q;for(let j=c;j<n;j++)a[r][j]-=f*a[c][j]}
+ }
+ return d;
+}
+function minors(m){
+ square(m);const n=m.length;
+ const direct=()=>Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>{
+  const x=m.filter((_,r)=>r!=i).map(r=>r.filter((_,c)=>c!=j));
+  return x.length?det(x):1;
+ }));
+ if(n<=10)return direct();
+ const d=det(m);
+ if(Math.abs(d)>=tol(m)){const v=inv(m);return v.map((r,i)=>r.map((_,j)=>d*v[j][i]*((i+j)%2?-1:1)))}
+ if(n<=40)return direct();
+ throw Error("Para una matriz singular mayor a 40×40 el cálculo de menores tardaría demasiado.");
+}
+const cof=m=>minors(m).map((r,i)=>r.map((v,j)=>(i+j)%2?-v:v));
+function inv(m){
+ square(m);const n=m.length,t=tol(m);
+ const a=m.map((r,i)=>r.concat(Array.from({length:n},(_,j)=>i==j?1:0)));
+ for(let c=0;c<n;c++){
+  let p=c;for(let r=c+1;r<n;r++)if(Math.abs(a[r][c])>Math.abs(a[p][c]))p=r;
+  if(Math.abs(a[p][c])<t)throw Error("El determinante es 0: la matriz no tiene inversa.");
+  [a[c],a[p]]=[a[p],a[c]];
+  const q=a[c][c];for(let j=0;j<2*n;j++)a[c][j]/=q;
+  for(let r=0;r<n;r++){if(r==c)continue;const f=a[r][c];for(let j=0;j<2*n;j++)a[r][j]-=f*a[c][j]}
+ }
+ return a.map(r=>r.slice(n));
+}
+const transpose=m=>m[0].map((_,c)=>m.map(r=>r[c])), scaleMat=(m,k)=>m.map(r=>r.map(v=>v*k));
+const table=m=>`<div class="mx"><table>${m.map(r=>`<tr>${r.map(x=>`<td>${fmt(x)}</td>`).join("")}</tr>`).join("")}</table></div>`;
+const textM=m=>m.map(r=>r.map(fmt).join("\t")).join("\n");
+function show(label,h,t){$("result").className="box ok";$("result").innerHTML=`<div class="lbl">${label}</div>${h}`;raw=t;$("copy").hidden=false}
+function calc(){
+ try{
+  const a=selected();
+  if(!a.length)throw Error("Selecciona al menos una matriz.");
+  if(op=="sum"||op=="sub"){
+   if(a.length<2)throw Error("Selecciona 2 o más matrices.");
+   let z=mat(a[0]);
+   for(let i=1;i<a.length;i++){const q=mat(a[i]);if(!same(z,q))throw Error("Las matrices seleccionadas deben tener las mismas dimensiones.");z=op=="sum"?add(z,q):sub(z,q)}
+   show(a.join(op=="sum"?" + ":" − "),table(z),textM(z));return;
+  }
+  if(op=="mul"){
+   if(a.length<2)throw Error("Selecciona 2 o más matrices.");
+   let z=mat(a[0]);for(let i=1;i<a.length;i++)z=mul(z,mat(a[i]));
+   show(a.join(" × "),table(z),textM(z));return;
+  }
+  if(a.length!=1)throw Error("Esta operación usa exactamente 1 matriz.");
+  const n=a[0],m=mat(n);
+  if(op=="det"){const z=det(m);show(`det(${n})`,`<div class="scalar">${fmt(z)}</div>`,`det(${n}) = ${fmt(z)}`)}
+  else if(op=="inv"){const z=inv(m);show(`${n}⁻¹`,table(z),textM(z))}
+  else if(op=="min"){const z=minors(m);show(`Menores(${n})`,table(z),textM(z))}
+  else if(op=="cof"){const z=cof(m);show(`Cof(${n})`,table(z),textM(z))}
+  else if(op=="trans"){const z=transpose(m);show(`${n}ᵀ`,table(z),textM(z))}
+  else{const k=parseN($("k").value);if(isNaN(k)||$("k").value.trim()==="")throw Error("Escribe un valor válido para k (ej. 2, 0.5 o 1/2).");const z=scaleMat(m,k);show(`${fmt(k)} · ${n}`,table(z),textM(z))}
+ }catch(e){$("result").className="box bad";$("result").textContent="Error: "+e.message;$("copy").hidden=true;raw=""}
+}
+
+$("count").onchange=draw;
+$("chips").onclick=e=>{const c=e.target.closest(".chip");if(c){op=c.dataset.o;ui()}};
+$("go").onclick=calc;
+$("k").onkeydown=e=>{if(e.key==="Enter")calc()};
+document.addEventListener("keydown",e=>{if(e.ctrlKey&&e.key==="Enter")calc()});
+$("all").onclick=()=>{$("checks").querySelectorAll("input").forEach(q=>q.checked=true);note()};
+$("mode").onclick=()=>{dec=!dec;$("mode").textContent="Ver: "+(dec?"decimales":"fracciones");if(raw)calc()};
+$("copy").onclick=async()=>{
+ const done=()=>{$("copy").textContent="¡Copiado!";setTimeout(()=>$("copy").textContent="Copiar",1200)};
+ try{await navigator.clipboard.writeText(raw);done()}
+ catch{const t=document.createElement("textarea");t.value=raw;document.body.appendChild(t);t.select();
+  try{document.execCommand("copy");done()}catch{$("copy").textContent="No se pudo copiar"}t.remove()}
+};
+draw();
+</script>
+</body>
+</html>
